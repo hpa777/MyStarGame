@@ -32,5 +32,6 @@ public class MyStarGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+		backgroundImage.dispose();
 	}
 }
