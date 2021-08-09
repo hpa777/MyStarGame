@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.Sprite;
+import ru.geekbrains.math.Rect;
 
 public class Logo extends Sprite {
 
@@ -16,15 +17,18 @@ public class Logo extends Sprite {
 
     public Logo(Texture texture) {
         super(new TextureRegion(texture));
-        setHeightProportion(.1f);
         pos.set(0f, 0f);
         speed = new Vector2();
         touch = new Vector2(pos);
     }
 
     @Override
-    public void draw(SpriteBatch batch) {
-        super.draw(batch);
+    public void resize(Rect worldBounds) {
+        setHeightProportion(.3f);
+    }
+
+    @Override
+    public void update(float delta) {
         if (touch.dst(pos) > V_LEN) {
             pos.add(speed);
         } else {
