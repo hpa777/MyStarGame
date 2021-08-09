@@ -8,9 +8,9 @@ import ru.geekbrains.math.Rect;
 
 public class Sprite extends Rect {
 
-    private float angle;
-    private float scale = 1f;
-    private TextureRegion[] regions;
+    protected float angle;
+    protected float scale = 1f;
+    protected TextureRegion[] regions;
     protected int frame;
 
     public Sprite(TextureRegion region) {
