@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.math.Rect;
+import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.sprite.Background;
 import ru.geekbrains.sprite.MainShip;
 import ru.geekbrains.sprite.Star;
@@ -21,8 +22,7 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas atlas;
 
     private Star[] stars;
-
-
+    private BulletPool bulletPool;
     private MainShip mainShip;
 
     @Override
@@ -36,14 +36,15 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas);
         }
-        TextureAtlas.AtlasRegion ss = atlas.findRegion("main_ship");
-        mainShip = new MainShip(new TextureRegion(ss, 0, 0, ss.originalWidth/2, ss.originalHeight));
+        bulletPool = new BulletPool();
+        mainShip = new MainShip(atlas, bulletPool);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        freeAllDestroyed();
         draw();
     }
 
@@ -61,8 +62,8 @@ public class GameScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         bg.dispose();
-
         atlas.dispose();
+        bulletPool.dispose();
     }
 
     @Override
@@ -73,10 +74,9 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        mainShip.touchUp(touch,pointer, button);
+        mainShip.touchUp(touch, pointer, button);
         return false;
     }
-
 
     @Override
     public boolean keyDown(int keycode) {
@@ -95,6 +95,11 @@ public class GameScreen extends BaseScreen {
             star.update(delta);
         }
         mainShip.update(delta);
+        bulletPool.updateActiveSprites(delta);
+    }
+
+    private void freeAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveSprites();
     }
 
     private void draw() {
@@ -104,6 +109,7 @@ public class GameScreen extends BaseScreen {
             star.draw(batch);
         }
         mainShip.draw(batch);
+        bulletPool.drawActiveSprites(batch);
         batch.end();
     }
 }
