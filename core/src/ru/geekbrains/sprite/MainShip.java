@@ -1,6 +1,8 @@
 package ru.geekbrains.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,6 +18,8 @@ public class MainShip extends Sprite {
     private static final float HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = 0.05f;
     private static final int INVALID_POINTER = -1;
+
+    private static final long AUTO_SHOOT_DELAY = 300;
 
     private final Vector2 v0 = new Vector2(0.5f, 0);
     private final Vector2 v = new Vector2();
@@ -34,7 +38,11 @@ public class MainShip extends Sprite {
     private float bulletHeight;
     private int bulletDamage;
 
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
+    private long lastShootTime = 0;
+
+    private Sound soundOfShoot;
+
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool, Sound sound) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
         bulletRegion = atlas.findRegion("bulletMainShip");
@@ -42,6 +50,8 @@ public class MainShip extends Sprite {
         bulletV = new Vector2(0, 0.5f);
         bulletHeight = 0.01f;
         bulletDamage = 1;
+        soundOfShoot = sound;
+
     }
 
     @Override
@@ -62,6 +72,9 @@ public class MainShip extends Sprite {
         }
         if (getRight() < worldBounds.getLeft()) {
             setLeft(worldBounds.getRight());
+        }
+        if (lastShootTime == 0 || System.currentTimeMillis() - lastShootTime >= AUTO_SHOOT_DELAY) {
+            shoot();
         }
     }
 
@@ -170,5 +183,9 @@ public class MainShip extends Sprite {
         Bullet bullet = bulletPool.obtain();
         bulletPos.set(pos.x, pos.y + getHalfHeight());
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, bulletDamage);
+        lastShootTime = System.currentTimeMillis();
+        soundOfShoot.play(0.09f);
     }
+
+
 }
