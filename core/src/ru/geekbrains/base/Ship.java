@@ -57,4 +57,14 @@ public class Ship extends Sprite {
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, bulletDamage);
         bulletSound.play(.05f);
     }
+
+    public void checkDamage(Bullet bullet) {
+        if (!bullet.isOutside(this)) {
+            hp-=bullet.getDamage();
+            if (hp <= 0) {
+                this.destroy();
+            }
+            bullet.destroy();
+        }
+    }
 }

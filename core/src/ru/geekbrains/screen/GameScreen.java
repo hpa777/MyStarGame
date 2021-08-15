@@ -13,6 +13,8 @@ import ru.geekbrains.math.Rect;
 import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.pool.EnemyPool;
 import ru.geekbrains.sprite.Background;
+import ru.geekbrains.sprite.Bullet;
+import ru.geekbrains.sprite.EnemyShip;
 import ru.geekbrains.sprite.MainShip;
 import ru.geekbrains.sprite.Star;
 import ru.geekbrains.utils.EnemyEmitter;
@@ -127,7 +129,20 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollisions() {
-
+        for (Bullet bullet : bulletPool.getActiveSprites()) {
+            if (!bullet.isDestroyed()) {
+                if (bullet.getOwner().equals(mainShip)) {
+                    enemyPool.checkDamage(bullet);
+                } else {
+                    mainShip.checkDamage(bullet);
+                }
+            }
+        }
+        for (EnemyShip enemyShip : enemyPool.getActiveSprites()) {
+            if (!enemyShip.isDestroyed() && !enemyShip.isOutside(mainShip)) {
+                enemyShip.destroy();
+            }
+        }
     }
 
     private void freeAllDestroyed() {
