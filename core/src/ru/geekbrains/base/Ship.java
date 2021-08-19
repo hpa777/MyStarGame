@@ -6,15 +6,20 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.pool.BulletPool;
+import ru.geekbrains.pool.ExplosionPool;
 import ru.geekbrains.sprite.Bullet;
+import ru.geekbrains.sprite.Explosion;
 
-public class Ship extends Sprite {
+public abstract class Ship extends Sprite {
+
+    private static final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
 
     protected final Vector2 v0;
     protected final Vector2 v;
 
     protected Rect worldBounds;
     protected BulletPool bulletPool;
+    protected ExplosionPool explosionPool;
     protected TextureRegion bulletRegion;
     protected Vector2 bulletPos;
     protected Vector2 bulletV;
@@ -25,6 +30,8 @@ public class Ship extends Sprite {
 
     protected float reloadInterval;
     protected float reloadTimer;
+
+    private float damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
 
     public Ship() {
         v0 = new Vector2();
@@ -50,6 +57,10 @@ public class Ship extends Sprite {
             reloadTimer = 0f;
             shoot();
         }
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
+        }
     }
 
     private void shoot() {
@@ -58,13 +69,37 @@ public class Ship extends Sprite {
         bulletSound.play(.05f);
     }
 
+    public void damage(int damage) {
+        hp-=damage;
+        if (hp <= 0) {
+            this.hp = 0;
+            this.destroy();
+        }
+        frame = 1;
+        damageAnimateTimer = 0f;
+    }
+
     public void checkDamage(Bullet bullet) {
-        if (!bullet.isOutside(this)) {
-            hp-=bullet.getDamage();
-            if (hp <= 0) {
-                this.destroy();
-            }
+        if (isBulletCollision(bullet)) {
+            damage(bullet.getDamage());
             bullet.destroy();
         }
+    }
+
+    protected abstract boolean isBulletCollision(Bullet bullet);
+
+    public int getBulletDamage() {
+        return bulletDamage;
+    }
+
+    private void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(pos, getHeight());
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        boom();
     }
 }
