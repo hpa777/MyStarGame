@@ -29,4 +29,12 @@ public class EnemyPool extends SpritesPool<EnemyShip> {
             }
         }
     }
+
+    public void checkDamage(Bullet bullet) {
+        for (EnemyShip enemyShip : this.getActiveSprites()) {
+            if (!enemyShip.isDestroyed()) {
+                enemyShip.checkDamage(bullet);
+            }
+        }
+    }
 }
