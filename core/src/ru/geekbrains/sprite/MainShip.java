@@ -168,6 +168,11 @@ public class MainShip extends Ship {
     public void flushDestroy() {
         super.flushDestroy();
         hp = MAIN_SHIP_HP;
-        pos.x = 0;
+        pos.x = worldBounds.pos.x;
+        pressedLeft = false;
+        pressedRight = false;
+        leftPointer = INVALID_POINTER;
+        rightPointer = INVALID_POINTER;
+        stop();
     }
 }
