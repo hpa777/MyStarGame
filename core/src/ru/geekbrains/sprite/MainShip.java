@@ -15,7 +15,7 @@ import ru.geekbrains.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
-    private static final int MAIN_SHIP_HP = 10;
+    private static final int MAIN_SHIP_HP = 100;
 
     private static final float HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = 0.05f;

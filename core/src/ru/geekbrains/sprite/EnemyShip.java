@@ -68,6 +68,11 @@ public class EnemyShip extends Ship {
         v.set(0, -0.4f);
     }
 
+    public void setPos(float x, float y) {
+        pos.set(x, y);
+        bulletPos.set(pos.x, pos.y - getHalfHeight());
+    }
+
     @Override
     public void destroy() {
         super.destroy();

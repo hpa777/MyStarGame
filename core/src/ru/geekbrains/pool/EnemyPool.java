@@ -22,12 +22,17 @@ public class EnemyPool extends SpritesPool<EnemyShip> {
         return new EnemyShip(worldBounds, bulletPool, explosionPool);
     }
 
-    public void checkDamage(Bullet bullet) {
+    public int checkDamage(Bullet bullet) {
+        int frags = 0;
         for (EnemyShip enemyShip : this.getActiveSprites()) {
             if (!enemyShip.isDestroyed()) {
                 enemyShip.checkDamage(bullet);
+                if (enemyShip.isDestroyed()) {
+                    frags++;
+                }
             }
         }
+        return frags;
     }
 
 

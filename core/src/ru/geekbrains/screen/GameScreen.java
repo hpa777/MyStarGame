@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import ru.geekbrains.base.BaseScreen;
+import ru.geekbrains.base.Font;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.pool.EnemyPool;
@@ -25,6 +27,11 @@ import ru.geekbrains.utils.EnemyEmitter;
 public class GameScreen extends BaseScreen {
 
     private static final int STAR_COUNT = 64;
+
+    private static final float PADDING = 0.01f;
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
 
     private Texture bg;
     private Background background;
@@ -46,6 +53,12 @@ public class GameScreen extends BaseScreen {
 
     private GameOver gameOver;
     private NewGameButton newGameButton;
+
+    private Font font;
+    private int frags;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHp;
+    private StringBuilder sbLevel;
 
     @Override
     public void show() {
@@ -74,6 +87,15 @@ public class GameScreen extends BaseScreen {
 
         gameOver = new GameOver(atlas);
         newGameButton = new NewGameButton(atlas, this);
+
+
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setSize(0.02f);
+        frags = 0;
+        sbFrags = new StringBuilder();
+        sbHp = new StringBuilder();
+        sbLevel = new StringBuilder();
+
     }
 
     @Override
@@ -153,7 +175,7 @@ public class GameScreen extends BaseScreen {
             mainShip.update(delta);
             bulletPool.updateActiveSprites(delta);
             enemyPool.updateActiveSprites(delta);
-            enemyEmitter.generate(delta);
+            enemyEmitter.generate(delta, frags);
         }
 
     }
@@ -165,7 +187,7 @@ public class GameScreen extends BaseScreen {
         for (Bullet bullet : bulletPool.getActiveSprites()) {
             if (!bullet.isDestroyed()) {
                 if (bullet.getOwner().equals(mainShip)) {
-                    enemyPool.checkDamage(bullet);
+                    frags+=enemyPool.checkDamage(bullet);
                 } else {
                     mainShip.checkDamage(bullet);
                 }
@@ -191,6 +213,7 @@ public class GameScreen extends BaseScreen {
         enemyPool.dispose();
         explosionPool.dispose();
         mainShip.flushDestroy();
+        frags = 0;
     }
 
     private void draw() {
@@ -210,6 +233,18 @@ public class GameScreen extends BaseScreen {
             }
         }
         explosionPool.drawActiveSprites(batch);
+        printInfo();
         batch.end();
+    }
+
+    private void printInfo() {
+        sbFrags.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - PADDING);
+
+        sbHp.setLength(0);
+        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop() - PADDING, Align.center);
+
+        sbLevel.setLength(0);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemyEmitter.getLevel()), worldBounds.getRight() - PADDING, worldBounds.getTop() - PADDING, Align.right);
     }
 }
